@@ -63,7 +63,7 @@ model = model.to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.0001, momentum=0.9)
 
-checkpoint = torch.load('/content/drive/MyDrive/Colab Notebooks/1조/4.Image_model/모델백업/ResNet50_Pre_T/rn50b96l31_49.pth')
+checkpoint = torch.load('/content/drive/MyDrive/Colab Notebooks/1조/2.Image_model/모델백업/ResNet50_Pre_T/rn50b96l31_49.pth')
 model.load_state_dict(checkpoint['model_state_dict'])
 optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 check = checkpoint['epoch']
@@ -80,7 +80,7 @@ tag_list = ['노트북','에어팟','아이폰','키보드','마우스','갤럭�
 
 total_df = []
 for i in range(len(tag_list)):
-    total_df.append(pd.read_csv(f'/content/drive/MyDrive/Colab Notebooks/1조/3.Recommen_model/tag_model/{tag_list[i]}.csv'))
+    total_df.append(pd.read_csv(f'/content/drive/MyDrive/Colab Notebooks/1조/3.Recommen_model/0.tag_model/{tag_list[i]}.csv'))
 tag_dict={'노트북':total_df[0],'에어팟':total_df[1],'아이폰':total_df[2],'키보드':total_df[3],'마우스':total_df[4],'갤럭시':total_df[5]}
 
 
@@ -201,25 +201,30 @@ def main():
 
         title = st.text_input('제목을 입력하세요.')
 
-        st.session_state.output1 = []
+        if st.session_state.get('output1', None) is None:
+            st.session_state.output1 = []
 
 
         if title:
             st.subheader('연관태그')
             select_matrix = tag_dict[category]
             find_tag([title], select_matrix)
+            c6 = st.text_input('연관태그 직접 입력')
             if c1:
-                output1.append('#' + tag[0])
+                st.session_state.output1.append('#' + tag[0])
             if c2:
-                output1.append('#' + tag[1])
+                st.session_state.output1.append('#' + tag[1])
             if c3:
-                output1.append('#' + tag[2])
+                st.session_state.output1.append('#' + tag[2])
             if c4:
-                output1.append('#' + tag[3])
+                st.session_state.output1.append('#' + tag[3])
             if c5:
-                output1.append('#' + tag[4])
-            st.multiselect('연관태그는 최대 5개까지 입력 가능합니다.',
-                           output1, output1)
+                st.session_state.output1.append('#' + tag[4])
+            if c6:
+                st.session_state.output1.append('#' + c6)
+            if st.session_state.output1 != []:
+                st.multiselect('연관태그는 최대 5개까지 입력 가능합니다.',
+                            set(st.session_state.output1), set(st.session_state.output1))
 
 
 
